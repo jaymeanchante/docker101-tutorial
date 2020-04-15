@@ -1,5 +1,5 @@
 awscli==1.18.36
-boto==2.49.0
+boto3==1.12.39
 Flask==1.1.2
 Flask_RESTful==0.3.8
 Flask_SQLAlchemy==2.4.1
