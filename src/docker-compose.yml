@@ -1,0 +1,39 @@
+version: "2.1"
+services:
+  api:
+    build: .
+    environment:
+      - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+      - AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      - AWS_DEFAULT_REGION=us-west-2
+      - AWS_DEFAULT_OUTPUT=json
+      - AWS_BUCKET_NAME=iris
+      - ENDPOINT_URL=http://localstack:4572
+    volumes:
+        - "$PWD/src:/root"
+    ports:
+      - "5000:5000"
+    restart: on-failure
+    depends_on:
+      - localstack
+    command: >
+      gunicorn -b 0.0.0.0:5000
+        --reload
+        app:app
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566-4599:4566-4599"
+      - "${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}"
+    expose:
+      - "4572"
+    environment:
+      - SERVICES=s3
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=${DATA_DIR- }
+      - PORT_WEB_UI=${PORT_WEB_UI- }
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
